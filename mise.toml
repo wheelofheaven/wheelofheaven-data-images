@@ -85,7 +85,7 @@ echo 'Manifest entries:' $(source venv/bin/activate && python -c 'import yaml; d
 
 [tasks.info]
 description = "Get detailed information about all processed pictures (size, compression, metadata)"
-run = "source venv/bin/activate && python scripts/analyze_processed.py --output-format table"
+run = "source venv/bin/activate && python scripts/analyze_processed.py --output-format table --sort-by name"
 
 [tasks.process-avif]
 description = "Process images to AVIF format only"

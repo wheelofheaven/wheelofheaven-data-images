@@ -98,6 +98,17 @@ class ProcessedImageAnalyzer:
 
         return metadata
 
+    def format_file_size(self, size_bytes: int) -> str:
+        """Format file size in human-readable format"""
+        if size_bytes < 1024:
+            return f"{size_bytes}B"
+        elif size_bytes < 1024 * 1024:
+            return f"{size_bytes / 1024:.1f}KB"
+        elif size_bytes < 1024 * 1024 * 1024:
+            return f"{size_bytes / (1024 * 1024):.1f}MB"
+        else:
+            return f"{size_bytes / (1024 * 1024 * 1024):.1f}GB"
+
     def analyze_single_image(self, processed_path: Path) -> Dict[str, Any]:
         """Analyze a single processed image"""
         result = {
@@ -217,7 +228,10 @@ class ProcessedImageAnalyzer:
             'thumbnails': len(thumbnail_analyses),
             'files_with_errors': len([a for a in analyses if 'error' in a]),
 
-            # Size statistics
+            # Size statistics (keeping raw bytes for better formatting)
+            'total_processed_size_bytes': total_processed_size,
+            'total_original_size_bytes': total_original_size,
+            'total_space_saved_bytes': total_original_size - total_processed_size if total_original_size > 0 else 0,
             'total_processed_size_mb': round(total_processed_size / (1024 * 1024), 2),
             'total_original_size_mb': round(total_original_size / (1024 * 1024), 2) if total_original_size > 0 else 0,
             'total_space_saved_mb': round((total_original_size - total_processed_size) / (1024 * 1024), 2) if total_original_size > 0 else 0,
@@ -265,9 +279,9 @@ class ProcessedImageAnalyzer:
         print(f"  Files with Errors: {summary.get('files_with_errors', 0)}")
 
         print(f"\nSIZE STATISTICS:")
-        print(f"  Total Processed Size: {summary.get('total_processed_size_mb', 0):.2f} MB")
-        print(f"  Total Original Size: {summary.get('total_original_size_mb', 0):.2f} MB")
-        print(f"  Total Space Saved: {summary.get('total_space_saved_mb', 0):.2f} MB")
+        print(f"  Total Processed Size: {self.format_file_size(summary.get('total_processed_size_bytes', 0))}")
+        print(f"  Total Original Size: {self.format_file_size(summary.get('total_original_size_bytes', 0))}")
+        print(f"  Total Space Saved: {self.format_file_size(summary.get('total_space_saved_bytes', 0))}")
 
         print(f"\nCOMPRESSION STATISTICS:")
         print(f"  Average Compression: {summary.get('average_compression_ratio_percent', 0):.1f}%")
@@ -291,21 +305,21 @@ class ProcessedImageAnalyzer:
         print(f"{'Filename':<30} {'Size':<8} {'Orig':<8} {'Comp%':<6} {'Dims':<12} {'Quality':<7} {'Format':<6} {'Type':<4}")
         print("-"*120)
 
-        for analysis in sorted(analyses, key=lambda x: x.get('processed_size_bytes', 0), reverse=True):
+        for analysis in analyses:
             if 'error' in analysis:
                 print(f"{analysis['processed_filename']:<30} ERROR: {analysis['error']}")
                 continue
 
             filename = analysis['processed_filename'][:29]
-            size_mb = f"{analysis.get('processed_size_mb', 0):.1f}MB"
-            orig_mb = f"{analysis.get('original_size_mb', 0):.1f}MB" if 'original_size_mb' in analysis else "N/A"
+            size_formatted = self.format_file_size(analysis.get('processed_size_bytes', 0))
+            orig_size_formatted = self.format_file_size(analysis.get('original_size_bytes', 0)) if 'original_size_bytes' in analysis else "N/A"
             comp_ratio = f"{analysis.get('compression_ratio_percent', 0):.1f}%" if 'compression_ratio_percent' in analysis else "N/A"
             dims = f"{analysis.get('processed_width', 0)}x{analysis.get('processed_height', 0)}"
             quality = str(analysis.get('manifest_quality', 'N/A'))[:6]
             fmt = analysis.get('processed_format', 'N/A')[:5]
             img_type = "THUMB" if analysis.get('is_thumbnail') else "MAIN"
 
-            print(f"{filename:<30} {size_mb:<8} {orig_mb:<8} {comp_ratio:<6} {dims:<12} {quality:<7} {fmt:<6} {img_type:<4}")
+            print(f"{filename:<30} {size_formatted:<8} {orig_size_formatted:<8} {comp_ratio:<6} {dims:<12} {quality:<7} {fmt:<6} {img_type:<4}")
 
     def save_json_format(self, analyses: List[Dict[str, Any]], summary: Dict[str, Any], filename: str):
         """Save results in JSON format"""
@@ -347,8 +361,8 @@ def main():
     parser.add_argument(
         '--sort-by',
         choices=['size', 'compression', 'name'],
-        default='size',
-        help='Sort results by (default: size)'
+        default='name',
+        help='Sort results by (default: name)'
     )
     parser.add_argument(
         '--output-file',
