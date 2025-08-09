@@ -1,4 +1,5 @@
-venv/
+backup/
 processed/
+venv/
 .ropeproject
-image_processing.log
+*.log

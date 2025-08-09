@@ -72,9 +72,61 @@ run = [
     "echo 'Manifest entries:' $(source venv/bin/activate && python -c 'import yaml; data=yaml.safe_load(open(\"manifest.yaml\")); print(len(data[\"images\"]))')",
 ]
 
+[tasks.info]
+description = "Get detailed information about all processed pictures (size, compression, metadata)"
+run = "source venv/bin/activate && python scripts/analyze_processed.py --output-format table"
+
+[tasks.info-json]
+description = "Export detailed image analysis as JSON"
+run = "source venv/bin/activate && python scripts/analyze_processed.py --output-format json"
+
+[tasks.info-csv]
+description = "Export detailed image analysis as CSV"
+run = "source venv/bin/activate && python scripts/analyze_processed.py --output-format csv"
+
+[tasks.info-by-size]
+description = "Show image analysis sorted by file size"
+run = "source venv/bin/activate && python scripts/analyze_processed.py --sort-by size"
+
+[tasks.info-by-compression]
+description = "Show image analysis sorted by compression ratio"
+run = "source venv/bin/activate && python scripts/analyze_processed.py --sort-by compression"
+
+[tasks.info-by-name]
+description = "Show image analysis sorted by filename"
+run = "source venv/bin/activate && python scripts/analyze_processed.py --sort-by name"
+
+[tasks.report]
+description = "Generate comprehensive analysis report in all formats"
+run = [
+    "source venv/bin/activate && python scripts/analyze_processed.py --output-format table",
+    "source venv/bin/activate && python scripts/analyze_processed.py --output-format json --output-file analysis_report.json",
+    "source venv/bin/activate && python scripts/analyze_processed.py --output-format csv --output-file analysis_report.csv",
+    "echo 'Reports generated: analysis_report.json, analysis_report.csv'",
+]
+
 [tasks.install]
 description = "Install Python dependencies"
 depends = ["setup"]
+
+[tasks.info-summary]
+description = "Get summary of processed images compression and sizes"
+run = '''
+echo '=== Processed Images Analysis ==='
+if [ -d processed ]; then
+  echo 'Total processed files:' $(find processed -name '*.webp' | wc -l)
+  echo 'Total processed size:' $(du -sh processed | cut -f1)
+  echo 'Average file size:' $(find processed -name '*.webp' -exec stat -f%z {} \; | awk '{sum+=$1; count++} END {if(count>0) printf "%.0f bytes\n", sum/count}')
+  echo
+  echo 'Largest files:'
+  find processed -name '*.webp' -exec ls -lh {} \; | sort -k5 -hr | head -5 | awk '{print $9, $5}'
+  echo
+  echo 'Smallest files:'
+  find processed -name '*.webp' -exec ls -lh {} \; | sort -k5 -h | head -5 | awk '{print $9, $5}'
+else
+  echo 'No processed directory found. Run processing first.'
+fi
+'''
 
 [tasks.test]
 description = "Run a test processing on a small subset"
@@ -89,3 +141,9 @@ alias = "dry-run"
 
 [tasks.init]
 alias = "setup"
+
+[tasks.analyze]
+alias = "info"
+
+[tasks.report-all]
+alias = "report"
