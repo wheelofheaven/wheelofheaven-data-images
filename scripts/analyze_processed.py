@@ -45,13 +45,13 @@ class ProcessedImageAnalyzer:
             print(f"Warning: Error parsing manifest file: {e}")
             return {}
 
-    def get_original_filename(self, webp_filename: str) -> Optional[str]:
-        """Find the original filename from manifest for a given WebP file"""
-        webp_stem = Path(webp_filename).stem
+    def get_original_filename(self, processed_filename: str) -> Optional[str]:
+        """Find the original filename from manifest for a given processed file"""
+        processed_stem = Path(processed_filename).stem
 
         # Handle thumbnail files
-        if webp_stem.endswith('_thumb'):
-            webp_stem = webp_stem[:-6]  # Remove '_thumb' suffix
+        if processed_stem.endswith('_thumb'):
+            processed_stem = processed_stem[:-6]  # Remove '_thumb' suffix
 
         images = self.manifest_data.get('images', [])
         for image_config in images:
@@ -59,9 +59,9 @@ class ProcessedImageAnalyzer:
             output_name = image_config.get('output_name')
 
             # Check if this matches our processed file
-            if output_name and output_name == webp_stem:
+            if output_name and output_name == processed_stem:
                 return original_name
-            elif Path(original_name).stem == webp_stem:
+            elif Path(original_name).stem == processed_stem:
                 return original_name
 
         return None
@@ -111,6 +111,9 @@ class ProcessedImageAnalyzer:
         # Get processed image metadata
         processed_metadata = self.get_image_metadata(processed_path)
         result.update({f'processed_{k}': v for k, v in processed_metadata.items()})
+
+        # Add format information
+        result['processed_format'] = processed_path.suffix[1:].upper()  # Remove dot and uppercase
 
         # Find original file
         original_filename = self.get_original_filename(processed_path.name)
@@ -162,18 +165,21 @@ class ProcessedImageAnalyzer:
             return []
 
         results = []
+        # Find all processed image files (AVIF and WebP)
+        avif_files = list(self.processed_dir.glob("*.avif"))
         webp_files = list(self.processed_dir.glob("*.webp"))
+        all_files = avif_files + webp_files
 
-        print(f"Analyzing {len(webp_files)} processed images...")
+        print(f"Analyzing {len(all_files)} processed images ({len(avif_files)} AVIF, {len(webp_files)} WebP)...")
 
-        for webp_file in sorted(webp_files):
+        for processed_file in sorted(all_files):
             try:
-                analysis = self.analyze_single_image(webp_file)
+                analysis = self.analyze_single_image(processed_file)
                 results.append(analysis)
             except Exception as e:
-                print(f"Error analyzing {webp_file}: {e}")
+                print(f"Error analyzing {processed_file}: {e}")
                 results.append({
-                    'processed_filename': webp_file.name,
+                    'processed_filename': processed_file.name,
                     'error': str(e)
                 })
 
@@ -197,6 +203,12 @@ class ProcessedImageAnalyzer:
 
         compression_ratios = [a['compression_ratio_percent'] for a in valid_analyses if 'compression_ratio_percent' in a]
         processed_sizes = [a['processed_size_bytes'] for a in valid_analyses]
+
+        # Format distribution
+        format_distribution = {}
+        for analysis in valid_analyses:
+            fmt = analysis.get('processed_format', 'UNKNOWN')
+            format_distribution[fmt] = format_distribution.get(fmt, 0) + 1
 
         summary = {
             'analysis_timestamp': datetime.now().isoformat(),
@@ -222,6 +234,7 @@ class ProcessedImageAnalyzer:
 
             # Format distribution
             'original_formats': {},
+            'processed_formats': format_distribution,
             'quality_settings': {},
         }
 
@@ -267,10 +280,15 @@ class ProcessedImageAnalyzer:
             for fmt, count in summary['original_formats'].items():
                 print(f"  {fmt}: {count} files")
 
+        if summary.get('processed_formats'):
+            print(f"\nPROCESSED FORMATS:")
+            for fmt, count in summary['processed_formats'].items():
+                print(f"  {fmt}: {count} files")
+
         # Detailed file listing
         print(f"\nDETAILED FILE ANALYSIS:")
         print("-"*120)
-        print(f"{'Filename':<30} {'Size':<8} {'Orig':<8} {'Comp%':<6} {'Dims':<12} {'Quality':<7} {'Type':<4}")
+        print(f"{'Filename':<30} {'Size':<8} {'Orig':<8} {'Comp%':<6} {'Dims':<12} {'Quality':<7} {'Format':<6} {'Type':<4}")
         print("-"*120)
 
         for analysis in sorted(analyses, key=lambda x: x.get('processed_size_bytes', 0), reverse=True):
@@ -284,9 +302,10 @@ class ProcessedImageAnalyzer:
             comp_ratio = f"{analysis.get('compression_ratio_percent', 0):.1f}%" if 'compression_ratio_percent' in analysis else "N/A"
             dims = f"{analysis.get('processed_width', 0)}x{analysis.get('processed_height', 0)}"
             quality = str(analysis.get('manifest_quality', 'N/A'))[:6]
+            fmt = analysis.get('processed_format', 'N/A')[:5]
             img_type = "THUMB" if analysis.get('is_thumbnail') else "MAIN"
 
-            print(f"{filename:<30} {size_mb:<8} {orig_mb:<8} {comp_ratio:<6} {dims:<12} {quality:<7} {img_type:<4}")
+            print(f"{filename:<30} {size_mb:<8} {orig_mb:<8} {comp_ratio:<6} {dims:<12} {quality:<7} {fmt:<6} {img_type:<4}")
 
     def save_json_format(self, analyses: List[Dict[str, Any]], summary: Dict[str, Any], filename: str):
         """Save results in JSON format"""

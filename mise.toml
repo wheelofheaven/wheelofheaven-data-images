@@ -26,6 +26,10 @@ run = "source venv/bin/activate && python scripts/process_images.py --config man
 description = "Process all images according to manifest.yaml"
 run = "source venv/bin/activate && python scripts/process_images.py --config manifest.yaml"
 
+[tasks.process-force]
+description = "Process all images (overwrite existing files)"
+run = "source venv/bin/activate && python scripts/process_images.py --config manifest.yaml --force"
+
 [tasks.process-verbose]
 description = "Process images with verbose logging"
 run = "source venv/bin/activate && python scripts/process_images.py --config manifest.yaml --verbose"
@@ -64,17 +68,48 @@ run = [
 
 [tasks.stats]
 description = "Show processing statistics"
-run = [
-    "echo '=== Project Statistics ==='",
-    "echo 'Raw images:' $(find raw -type f \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.gif' -o -iname '*.bmp' -o -iname '*.tiff' \\) | wc -l)",
-    "if [ -d processed ]; then echo 'Processed images:' $(find processed -name '*.webp' | wc -l); fi",
-    "if [ -d backup ]; then echo 'Backed up images:' $(find backup -type f | wc -l); fi",
-    "echo 'Manifest entries:' $(source venv/bin/activate && python -c 'import yaml; data=yaml.safe_load(open(\"manifest.yaml\")); print(len(data[\"images\"]))')",
-]
+run = '''
+echo '=== Project Statistics ==='
+echo 'Raw images:' $(find raw -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.gif' -o -iname '*.bmp' -o -iname '*.tiff' \) | wc -l)
+if [ -d processed ]; then
+  AVIF_COUNT=$(find processed -name '*.avif' | wc -l)
+  WEBP_COUNT=$(find processed -name '*.webp' | wc -l)
+  TOTAL_PROCESSED=$((AVIF_COUNT + WEBP_COUNT))
+  echo "Processed images: $TOTAL_PROCESSED"
+  echo "  AVIF: $AVIF_COUNT"
+  echo "  WebP: $WEBP_COUNT"
+fi
+if [ -d backup ]; then echo 'Backed up images:' $(find backup -type f | wc -l); fi
+echo 'Manifest entries:' $(source venv/bin/activate && python -c 'import yaml; data=yaml.safe_load(open("manifest.yaml")); print(len(data["images"]))')
+'''
 
 [tasks.info]
 description = "Get detailed information about all processed pictures (size, compression, metadata)"
 run = "source venv/bin/activate && python scripts/analyze_processed.py --output-format table"
+
+[tasks.process-avif]
+description = "Process images to AVIF format only"
+run = "source venv/bin/activate && python scripts/process_images.py --config manifest.yaml --formats avif"
+
+[tasks.process-avif-force]
+description = "Process images to AVIF format only (overwrite existing)"
+run = "source venv/bin/activate && python scripts/process_images.py --config manifest.yaml --formats avif --force"
+
+[tasks.process-webp]
+description = "Process images to WebP format only"
+run = "source venv/bin/activate && python scripts/process_images.py --config manifest.yaml --formats webp"
+
+[tasks.process-webp-force]
+description = "Process images to WebP format only (overwrite existing)"
+run = "source venv/bin/activate && python scripts/process_images.py --config manifest.yaml --formats webp --force"
+
+[tasks.process-both]
+description = "Process images to both AVIF and WebP formats"
+run = "source venv/bin/activate && python scripts/process_images.py --config manifest.yaml --formats avif,webp"
+
+[tasks.process-both-force]
+description = "Process images to both AVIF and WebP formats (overwrite existing)"
+run = "source venv/bin/activate && python scripts/process_images.py --config manifest.yaml --formats avif,webp --force"
 
 [tasks.info-json]
 description = "Export detailed image analysis as JSON"
@@ -114,15 +149,21 @@ description = "Get summary of processed images compression and sizes"
 run = '''
 echo '=== Processed Images Analysis ==='
 if [ -d processed ]; then
-  echo 'Total processed files:' $(find processed -name '*.webp' | wc -l)
+  AVIF_COUNT=$(find processed -name '*.avif' | wc -l)
+  WEBP_COUNT=$(find processed -name '*.webp' | wc -l)
+  TOTAL_COUNT=$((AVIF_COUNT + WEBP_COUNT))
+
+  echo "Total processed files: $TOTAL_COUNT"
+  echo "  AVIF files: $AVIF_COUNT"
+  echo "  WebP files: $WEBP_COUNT"
   echo 'Total processed size:' $(du -sh processed | cut -f1)
-  echo 'Average file size:' $(find processed -name '*.webp' -exec stat -f%z {} \; | awk '{sum+=$1; count++} END {if(count>0) printf "%.0f bytes\n", sum/count}')
+  echo 'Average file size:' $(find processed \( -name '*.avif' -o -name '*.webp' \) -exec stat -f%z {} \; | awk '{sum+=$1; count++} END {if(count>0) printf "%.0f bytes\n", sum/count}')
   echo
   echo 'Largest files:'
-  find processed -name '*.webp' -exec ls -lh {} \; | sort -k5 -hr | head -5 | awk '{print $9, $5}'
+  find processed \( -name '*.avif' -o -name '*.webp' \) -exec ls -lh {} \; | sort -k5 -hr | head -5 | awk '{print $9, $5}'
   echo
   echo 'Smallest files:'
-  find processed -name '*.webp' -exec ls -lh {} \; | sort -k5 -h | head -5 | awk '{print $9, $5}'
+  find processed \( -name '*.avif' -o -name '*.webp' \) -exec ls -lh {} \; | sort -k5 -h | head -5 | awk '{print $9, $5}'
 else
   echo 'No processed directory found. Run processing first.'
 fi
@@ -131,6 +172,14 @@ fi
 [tasks.test]
 description = "Run a test processing on a small subset"
 run = "source venv/bin/activate && python -c 'import yaml; data=yaml.safe_load(open(\"manifest.yaml\")); data[\"images\"]=data[\"images\"][:3]; yaml.dump(data, open(\"test_manifest.yaml\", \"w\"))' && python scripts/process_images.py --config test_manifest.yaml --dry-run"
+
+[tasks.test-force]
+description = "Run a test processing on a small subset (overwrite existing)"
+run = "source venv/bin/activate && python -c 'import yaml; data=yaml.safe_load(open(\"manifest.yaml\")); data[\"images\"]=data[\"images\"][:3]; yaml.dump(data, open(\"test_manifest.yaml\", \"w\"))' && python scripts/process_images.py --config test_manifest.yaml --force"
+
+[tasks.test-real]
+description = "Actually process a small subset (not dry-run)"
+run = "source venv/bin/activate && python -c 'import yaml; data=yaml.safe_load(open(\"manifest.yaml\")); data[\"images\"]=data[\"images\"][:3]; yaml.dump(data, open(\"test_manifest.yaml\", \"w\"))' && python scripts/process_images.py --config test_manifest.yaml"
 
 # Aliases for common commands
 [tasks.run]

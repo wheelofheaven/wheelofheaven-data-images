@@ -4,6 +4,9 @@
 # Core image processing
 Pillow>=10.0.0
 
+# AVIF support for Pillow
+pillow-avif-plugin>=1.4.0
+
 # YAML configuration parsing
 PyYAML>=6.0
 

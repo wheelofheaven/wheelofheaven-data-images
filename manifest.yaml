@@ -4,8 +4,9 @@
 # Format:
 # - filename: the name of the file in raw/ directory
 #   output_name: optional custom output name (if not specified, uses original name)
-#   quality: webp quality (1-100, default: 80)
+#   quality: image quality (1-100, default: 80)
 #   grain_intensity: salt and pepper grain filter intensity (0.0-1.0, default: 0.1)
+#   formats: list of output formats to generate (default: ["avif", "webp"])
 #   enabled: whether to process this image (default: true)
 
 images:
@@ -427,6 +428,7 @@ global_settings:
   grain_intensity: 0.1
   output_directory: "processed"
   preserve_metadata: false
+  formats: ["avif", "webp"] # Generate both AVIF and WebP by default
 
 # Processing options
 processing:
@@ -434,6 +436,15 @@ processing:
   create_thumbnails: true
   thumbnail_width: 400
   thumbnail_suffix: "_thumb"
+
+  # Format-specific settings
+  avif:
+    quality: 50 # AVIF can use lower quality for same visual result
+    speed: 6 # Encoding speed (0-10, higher is faster but larger files)
+
+  webp:
+    quality: 80 # WebP quality
+    method: 6 # Compression method (0-6, higher is better compression)
 
   # Optimization settings
   optimize: true
