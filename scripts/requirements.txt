@@ -1,0 +1,17 @@
+# Image Processing Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core image processing
+Pillow>=10.0.0
+
+# YAML configuration parsing
+PyYAML>=6.0
+
+# Numerical operations for grain filter
+numpy>=1.24.0
+
+# Optional: Progress bars for batch processing
+tqdm>=4.65.0
+
+# Optional: Additional image processing capabilities
+opencv-python>=4.8.0

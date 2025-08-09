@@ -1,0 +1,91 @@
+[tools]
+python = "3.11"
+
+[env]
+# Project-specific environment variables
+PYTHONPATH = "."
+PROJECT_NAME = "wheelofheaven-data-images"
+
+[tasks.setup]
+description = "Setup Python environment and install dependencies"
+run = [
+    "python -m venv venv",
+    "source venv/bin/activate && pip install --upgrade pip",
+    "source venv/bin/activate && pip install -r scripts/requirements.txt",
+]
+
+[tasks.check]
+description = "Check prerequisites and validate configuration"
+run = "source venv/bin/activate && python scripts/process_images.py --config manifest.yaml --dry-run"
+
+[tasks.dry-run]
+description = "Show what would be processed without actually doing it"
+run = "source venv/bin/activate && python scripts/process_images.py --config manifest.yaml --dry-run"
+
+[tasks.process]
+description = "Process all images according to manifest.yaml"
+run = "source venv/bin/activate && python scripts/process_images.py --config manifest.yaml"
+
+[tasks.process-verbose]
+description = "Process images with verbose logging"
+run = "source venv/bin/activate && python scripts/process_images.py --config manifest.yaml --verbose"
+
+[tasks.clean]
+description = "Clean up generated files (processed images, backups, logs)"
+run = [
+    "rm -rf processed",
+    "rm -rf backup",
+    "rm -f image_processing.log",
+    "rm -rf __pycache__",
+]
+
+[tasks.clean-all]
+description = "Clean everything including virtual environment"
+run = [
+    "rm -rf processed",
+    "rm -rf backup",
+    "rm -f image_processing.log",
+    "rm -rf __pycache__",
+    "rm -rf venv",
+]
+
+[tasks.validate-manifest]
+description = "Validate the manifest.yaml configuration file"
+run = "source venv/bin/activate && python -c 'import yaml; yaml.safe_load(open(\"manifest.yaml\"))' && echo 'Manifest is valid YAML'"
+
+[tasks.count-images]
+description = "Count images in raw directory and manifest"
+run = [
+    "echo 'Images in raw directory:'",
+    "find raw -type f \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.gif' -o -iname '*.bmp' -o -iname '*.tiff' \\) | wc -l",
+    "echo 'Images in manifest:'",
+    "source venv/bin/activate && python -c 'import yaml; data=yaml.safe_load(open(\"manifest.yaml\")); print(len(data[\"images\"]))'",
+]
+
+[tasks.stats]
+description = "Show processing statistics"
+run = [
+    "echo '=== Project Statistics ==='",
+    "echo 'Raw images:' $(find raw -type f \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.gif' -o -iname '*.bmp' -o -iname '*.tiff' \\) | wc -l)",
+    "if [ -d processed ]; then echo 'Processed images:' $(find processed -name '*.webp' | wc -l); fi",
+    "if [ -d backup ]; then echo 'Backed up images:' $(find backup -type f | wc -l); fi",
+    "echo 'Manifest entries:' $(source venv/bin/activate && python -c 'import yaml; data=yaml.safe_load(open(\"manifest.yaml\")); print(len(data[\"images\"]))')",
+]
+
+[tasks.install]
+description = "Install Python dependencies"
+depends = ["setup"]
+
+[tasks.test]
+description = "Run a test processing on a small subset"
+run = "source venv/bin/activate && python -c 'import yaml; data=yaml.safe_load(open(\"manifest.yaml\")); data[\"images\"]=data[\"images\"][:3]; yaml.dump(data, open(\"test_manifest.yaml\", \"w\"))' && python scripts/process_images.py --config test_manifest.yaml --dry-run"
+
+# Aliases for common commands
+[tasks.run]
+alias = "process"
+
+[tasks.preview]
+alias = "dry-run"
+
+[tasks.init]
+alias = "setup"

@@ -1,0 +1,4 @@
+venv/
+processed/
+.ropeproject
+image_processing.log

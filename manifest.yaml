@@ -1,0 +1,444 @@
+# Image Processing Configuration
+# This file defines which images from the raw/ directory should be processed
+#
+# Format:
+# - filename: the name of the file in raw/ directory
+#   output_name: optional custom output name (if not specified, uses original name)
+#   quality: webp quality (1-100, default: 80)
+#   grain_intensity: salt and pepper grain filter intensity (0.0-1.0, default: 0.1)
+#   enabled: whether to process this image (default: true)
+
+images:
+  # Astronomical/Space images
+  - filename: "20202003_vernal_equinox_stellarium.jpg"
+    quality: 85
+    grain_intensity: 0.05
+
+  - filename: "equinox_1945.png"
+    quality: 85
+    grain_intensity: 0.05
+
+  - filename: "equinox_bc11010.png"
+    quality: 85
+    grain_intensity: 0.05
+
+  - filename: "equinox_bc13170.png"
+    quality: 85
+    grain_intensity: 0.05
+
+  - filename: "equinox_bc15330.png"
+    quality: 85
+    grain_intensity: 0.05
+
+  - filename: "equinox_bc17490.png"
+    quality: 85
+    grain_intensity: 0.05
+
+  - filename: "equinox_bc19650.png"
+    quality: 85
+    grain_intensity: 0.05
+
+  - filename: "equinox_bc210.png"
+    quality: 85
+    grain_intensity: 0.05
+
+  - filename: "equinox_bc21810.png"
+    quality: 85
+    grain_intensity: 0.05
+
+  - filename: "equinox_bc2370.png"
+    quality: 85
+    grain_intensity: 0.05
+
+  - filename: "equinox_bc4530.png"
+    quality: 85
+    grain_intensity: 0.05
+
+  - filename: "equinox_bc6690.png"
+    quality: 85
+    grain_intensity: 0.05
+
+  - filename: "equinox_bc8850.png"
+    quality: 85
+    grain_intensity: 0.05
+
+  - filename: "hubble-cosmic-web.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "precession_schema.jpg"
+    quality: 85
+    grain_intensity: 0.05
+
+  - filename: "muse-deep-space.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  # Conceptual/Artistic images
+  - filename: "above-clouds-platform.png"
+    quality: 80
+    grain_intensity: 0.1
+
+  - filename: "above-the-clouds-structure.png"
+    quality: 80
+    grain_intensity: 0.1
+
+  - filename: "abundance.png"
+    quality: 80
+    grain_intensity: 0.1
+
+  - filename: "ancient-monuments-sunset.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "antidiluvian-queen-on-throne.png"
+    quality: 80
+    grain_intensity: 0.12
+
+  - filename: "archaic-blue-planet.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "ark-in-orbit.png"
+    quality: 80
+    grain_intensity: 0.1
+
+  - filename: "atlantian-city.png"
+    quality: 85
+    grain_intensity: 0.1
+
+  - filename: "barren-lands-outpost.png"
+    quality: 80
+    grain_intensity: 0.12
+
+  - filename: "bird-of-paradise.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "blue-planet-afar.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "blue-planet-mist.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "blue-planet-surface.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "circular-city-seen-from-the-sky.png"
+    quality: 85
+    grain_intensity: 0.1
+
+  - filename: "crowd-walking-towards-beam-earth.png"
+    quality: 80
+    grain_intensity: 0.1
+
+  - filename: "crowd-walking-towards-beam.png"
+    quality: 80
+    grain_intensity: 0.1
+
+  - filename: "dinosaurs-on-plain.png"
+    quality: 85
+    grain_intensity: 0.1
+
+  - filename: "dome-in-tranquil-valley.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "earth-sunrise-from-orbit.png"
+    quality: 90
+    grain_intensity: 0.05
+
+  - filename: "elephant-biome.png"
+    quality: 85
+    grain_intensity: 0.1
+
+  - filename: "explosion-over-the-sea.png"
+    quality: 80
+    grain_intensity: 0.12
+
+  - filename: "fauna-and-flora.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "floating-spacesuit-in-sky.png"
+    quality: 80
+    grain_intensity: 0.1
+
+  - filename: "futuristic-city-with-tower.png"
+    quality: 85
+    grain_intensity: 0.1
+
+  - filename: "genesis-dome-interior (2).png"
+    output_name: "genesis-dome-interior-2"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "genesis-dome-interior.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "genetic-research-lab.png"
+    quality: 80
+    grain_intensity: 0.1
+
+  - filename: "geodesic-instruments.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "geodesic-structures.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "glass-dome-at-night.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "glowing-domes-in-landscape.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "human-genesis.png"
+    quality: 85
+    grain_intensity: 0.1
+
+  - filename: "interstellar-space-travel.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "lion-and-crocodile-struggle.png"
+    quality: 85
+    grain_intensity: 0.1
+
+  - filename: "man-standing-on-cliff-overseeing-spacecraft.png"
+    quality: 85
+    grain_intensity: 0.1
+
+  - filename: "man-standing-on-plaza.png"
+    quality: 85
+    grain_intensity: 0.1
+
+  - filename: "modern-urban-landscape.png"
+    quality: 80
+    grain_intensity: 0.1
+
+  - filename: "monolithic-base-in-snow.png"
+    quality: 85
+    grain_intensity: 0.12
+
+  - filename: "oceanside-geodesy-station.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "orbital-geodesy-satellite.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "orbital-outpost.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "orbiting-spheres-above-fountain.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "people-in-light-marble-plaza.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "people-standing-over-golden-floor.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "primordial-jungle.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "primordial-nature-two-researchers.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "projectile-impact-on-earth.png"
+    quality: 80
+    grain_intensity: 0.12
+
+  - filename: "proto-earth-satellite.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "pyramid-red-glowing-star.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "pyramid-shaped-energy-structure.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "red-colored-cityscape.png"
+    quality: 85
+    grain_intensity: 0.1
+
+  - filename: "saurian-experiments.png"
+    quality: 80
+    grain_intensity: 0.12
+
+  - filename: "soldiers-in-front-of-silos.png"
+    quality: 80
+    grain_intensity: 0.12
+
+  - filename: "spacecraft-in-orbit.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "spacecraft-orbiting-earth-sunrise.png"
+    quality: 90
+    grain_intensity: 0.05
+
+  - filename: "sunset-man-on-hill.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "terraforming-explosions.png"
+    quality: 80
+    grain_intensity: 0.12
+
+  - filename: "two-people-on-hill-at-sunrise.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "two-treasure-hunters.png"
+    quality: 85
+    grain_intensity: 0.1
+
+  - filename: "underwater-lab.png"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "vehicle-in-snowy-landscape.png"
+    quality: 85
+    grain_intensity: 0.1
+
+  # Book covers and reference materials
+  - filename: "ces-dieux-qui-firent-le-ciel-et-la-terre-book.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "dhorme-bible-books.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "escaping-from-eden-book.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "gospel-in-the-stars-book.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "hamlets-mill-book.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "l-ere-du-verseau-book.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "la-bibbia-non-e-un-libro-sacro-book.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "la-lune-cle-de-la-bible-book.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "le-message-book.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "mazzaroth-rolleston-book.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "mccall_the_prologue_and_the_promise.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "the-scars-of-eden-book.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "the-zohar-pritzker-edition-book.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "wonders-in-the-sky-book.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  # Historical/Documentary images
+  - filename: "pyramids-giza-air-force-ww2-hd.jpg"
+    quality: 90
+    grain_intensity: 0.05
+
+  - filename: "fact-check.jpg"
+    quality: 85
+    grain_intensity: 0.05
+
+  # Mood/Atmosphere images
+  - filename: "moodscape_01.jpg"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "moodscape_02.jpg"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "moodscape_03.jpg"
+    quality: 85
+    grain_intensity: 0.08
+
+  - filename: "moodscape_04.jpg"
+    quality: 85
+    grain_intensity: 0.08
+
+  # Symbols and logos
+  - filename: "renderings-raelian-symbol-of-infinity.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  - filename: "wheel-of-heaven-banner.jpg"
+    quality: 90
+    grain_intensity: 0.05
+
+  - filename: "ye-tweet-raelian-symbol.jpg"
+    quality: 90
+    grain_intensity: 0.03
+
+  # Personal/Profile images
+  - filename: "zara_san.jpg"
+    quality: 90
+    grain_intensity: 0.05
+
+# Global settings (used as defaults when not specified per image)
+global_settings:
+  quality: 80
+  grain_intensity: 0.1
+  output_directory: "processed"
+  preserve_metadata: false
+
+# Processing options
+processing:
+  # Create thumbnails alongside full images
+  create_thumbnails: true
+  thumbnail_width: 400
+  thumbnail_suffix: "_thumb"
+
+  # Optimization settings
+  optimize: true
+  lossless: false
+
+  # Backup settings
+  backup_originals: true
+  backup_directory: "backup"
